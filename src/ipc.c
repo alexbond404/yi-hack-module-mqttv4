@@ -41,9 +41,10 @@ static void ipc_debug(const char* fmt, ...);
 static void handle_ipc_motion_start();
 static void handle_ipc_motion_stop();
 static void handle_ipc_ai_human_detection_start();
-static void handle_ipc_ai_human_detection_stop();
+//static void handle_ipc_ai_human_detection_stop();
 static void handle_ipc_baby_crying();
 static void handle_ipc_sound_detection();
+static void handle_ipc_record_ready();
 
 static void handle_ipc_unrecognized();
 
@@ -203,11 +204,11 @@ static int parse_message(char *msg, ssize_t len)
         handle_ipc_ai_human_detection_start();
         return 0;
     }
-    else if((len >= sizeof(IPC_AI_HUMAN_DETECTION_STOP) - 1) && (memcmp(msg, IPC_AI_HUMAN_DETECTION_STOP, sizeof(IPC_AI_HUMAN_DETECTION_STOP) - 1)==0))
+/*    else if((len >= sizeof(IPC_AI_HUMAN_DETECTION_STOP) - 1) && (memcmp(msg, IPC_AI_HUMAN_DETECTION_STOP, sizeof(IPC_AI_HUMAN_DETECTION_STOP) - 1)==0))
     {
         handle_ipc_ai_human_detection_stop();
         return 0;
-    }
+    }*/
     else if((len >= sizeof(IPC_BABY_CRYING) - 1) && (memcmp(msg, IPC_BABY_CRYING, sizeof(IPC_BABY_CRYING) - 1)==0))
     {
         handle_ipc_baby_crying();
@@ -216,6 +217,11 @@ static int parse_message(char *msg, ssize_t len)
     else if((len >= sizeof(IPC_SOUND_DETECTION) - 1) && (memcmp(msg, IPC_SOUND_DETECTION, sizeof(IPC_SOUND_DETECTION) - 1)==0))
     {
         handle_ipc_sound_detection();
+        return 0;
+    }
+    else if((len >= sizeof(IPC_RECORD_READY) - 1) && (memcmp(msg, IPC_RECORD_READY, sizeof(IPC_RECORD_READY) - 1)==0))
+    {
+        handle_ipc_record_ready();
         return 0;
     }
 
@@ -252,11 +258,11 @@ static void handle_ipc_ai_human_detection_start()
     call_callback(IPC_MSG_AI_HUMAN_DETECTION_START);
 }
 
-static void handle_ipc_ai_human_detection_stop()
+/*static void handle_ipc_ai_human_detection_stop()
 {
     ipc_debug("GOT AI_HUMAN_DETECTION STOP\n");
     call_callback(IPC_MSG_AI_HUMAN_DETECTION_STOP);
-}
+}*/
 
 static void handle_ipc_baby_crying()
 {
@@ -270,6 +276,11 @@ static void handle_ipc_sound_detection()
     call_callback(IPC_MSG_SOUND_DETECTION);
 }
 
+static void handle_ipc_record_ready()
+{
+    ipc_debug("GOT RECORD READY\n");
+    call_callback(IPC_MSG_RECORD_READY);
+}
 //-----------------------------------------------------------------------------
 // GETTERS AND SETTERS
 //-----------------------------------------------------------------------------

@@ -15,9 +15,9 @@
 #include "files.h"
 
 #define MQTTV4_VERSION      "0.1.0"
-#define MQTTV4_CONF_FILE    "/home/yi-hack-v4/etc/mqttv4.conf"
+#define MQTTV4_CONF_FILE    "/tmp/sd/yi-hack/etc/mqttv4.conf"
 
-#define MQTTV4_SNAPSHOT     "export MOD=$(cat /home/yi-hack/model_suffix); /home/yi-hack/bin/imggrabber -m $MOD -r high -w"
+#define MQTTV4_SNAPSHOT     "export MOD=$(cat /tmp/sd/yi-hack/model_suffix); /tmp/sd/yi-hack/bin/imggrabber -m $MOD -r high -w"
 
 #define TH_AVAILABLE 0
 #define TH_WAITING   1

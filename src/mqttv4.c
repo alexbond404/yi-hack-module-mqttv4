@@ -67,7 +67,7 @@ void *send_files_list(void *arg)
     pthread_exit(NULL);
 }
 
-void callback_motion_start()
+static void send_motion_image()
 {
     char topic[128];
     char cmd[128];
@@ -76,25 +76,6 @@ void callback_motion_start()
     long int sz;
     char *bufferImage;
     mqtt_msg_t msg;
-    int ti;
-
-    printf("CALLBACK MOTION START\n");
-
-    ti = get_thread_index(TH_AVAILABLE);
-    printf("Thread %d available\n", ti);
-    if (ti >= 0 ) {
-        time(&filesThread[ti].timeStart);
-        filesThread[ti].running = TH_WAITING;
-    }
-
-    // Send start message
-    msg.msg=mqttv4_conf.motion_start_msg;
-    msg.len=strlen(msg.msg);
-    msg.topic=topic;
-
-    sprintf(topic, "%s/%s", mqttv4_conf.mqtt_prefix, mqttv4_conf.topic_motion);
-
-    mqtt_send_message(&msg, conf.retain_motion);
 
     if (strcmp(EMPTY_TOPIC, mqttv4_conf.topic_motion_image) != 0) {
         // Send image
@@ -144,6 +125,33 @@ void callback_motion_start()
     }
 }
 
+static void callback_motion_start()
+{
+    char topic[128];
+    mqtt_msg_t msg;
+    int ti;
+
+    printf("CALLBACK MOTION START\n");
+
+    ti = get_thread_index(TH_AVAILABLE);
+    printf("Thread %d available\n", ti);
+    if (ti >= 0 ) {
+        time(&filesThread[ti].timeStart);
+        filesThread[ti].running = TH_WAITING;
+    }
+
+    // Send start message
+    msg.msg=mqttv4_conf.motion_start_msg;
+    msg.len=strlen(msg.msg);
+    msg.topic=topic;
+
+    sprintf(topic, "%s/%s", mqttv4_conf.mqtt_prefix, mqttv4_conf.topic_motion);
+
+    mqtt_send_message(&msg, conf.retain_motion);
+
+    send_motion_image();
+}
+
 void callback_motion_stop()
 {
     char topic[128];
@@ -190,8 +198,16 @@ void callback_ai_human_detection_start()
 {
     char topic[128];
     mqtt_msg_t msg;
+    int ti;
 
     printf("CALLBACK AI_HUMAN_DETECTION START\n");
+
+    ti = get_thread_index(TH_AVAILABLE);
+    printf("Thread %d available\n", ti);
+    if (ti >= 0 ) {
+        time(&filesThread[ti].timeStart);
+        filesThread[ti].running = TH_WAITING;
+    }
 
     msg.msg=mqttv4_conf.ai_human_detection_start_msg;
     msg.len=strlen(msg.msg);
@@ -200,9 +216,11 @@ void callback_ai_human_detection_start()
     sprintf(topic, "%s/%s", mqttv4_conf.mqtt_prefix, mqttv4_conf.topic_ai_human_detection);
 
     mqtt_send_message(&msg, conf.retain_ai_human_detection);
+
+    send_motion_image();
 }
 
-void callback_ai_human_detection_stop()
+/*void callback_ai_human_detection_stop()
 {
     char topic[128];
     mqtt_msg_t msg;
@@ -216,7 +234,7 @@ void callback_ai_human_detection_stop()
     sprintf(topic, "%s/%s", mqttv4_conf.mqtt_prefix, mqttv4_conf.topic_ai_human_detection);
 
     mqtt_send_message(&msg, conf.retain_ai_human_detection);
-}
+}*/
 
 void callback_baby_crying()
 {
@@ -248,6 +266,22 @@ void callback_sound_detection()
     sprintf(topic, "%s/%s", mqttv4_conf.mqtt_prefix, mqttv4_conf.topic_sound_detection);
 
     mqtt_send_message(&msg, conf.retain_sound_detection);
+}
+
+static void callback_record_ready()
+{
+    char topic[128];
+    mqtt_msg_t msg;
+
+    printf("CALLBACK RECORD READY\n");
+
+    msg.msg="record_ready";
+    msg.len=strlen(msg.msg);
+    msg.topic=topic;
+
+    sprintf(topic, "%s/%s", mqttv4_conf.mqtt_prefix, msg.msg);
+
+    mqtt_send_message(&msg, 1);
 }
 
 int main(int argc, char **argv)
@@ -289,9 +323,10 @@ int main(int argc, char **argv)
     ipc_set_callback(IPC_MSG_MOTION_START, &callback_motion_start);
     ipc_set_callback(IPC_MSG_MOTION_STOP, &callback_motion_stop);
     ipc_set_callback(IPC_MSG_AI_HUMAN_DETECTION_START, &callback_ai_human_detection_start);
-    ipc_set_callback(IPC_MSG_AI_HUMAN_DETECTION_STOP, &callback_ai_human_detection_stop);
+//    ipc_set_callback(IPC_MSG_AI_HUMAN_DETECTION_STOP, &callback_ai_human_detection_stop);
     ipc_set_callback(IPC_MSG_BABY_CRYING, &callback_baby_crying);
     ipc_set_callback(IPC_MSG_SOUND_DETECTION, &callback_sound_detection);
+    ipc_set_callback(IPC_MSG_RECORD_READY, &callback_record_ready);
 
     while(1)
     {

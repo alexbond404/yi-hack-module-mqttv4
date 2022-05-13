@@ -15,9 +15,7 @@
 #  along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
-CC=arm-hisiv300-linux-gcc
-USER_CFLAGS=-march=armv5te -mcpu=arm926ej-s -I/opt/hisi-linux/x86-arm/arm-hisiv300-linux/target/usr/include -L/opt/hisi-linux/x86-arm/arm-hisiv300-linux/target/usr/lib
-USER_LDFLAGS=
-AR=arm-hisiv300-linux-ar
-RANLIB=arm-hisiv300-linux-ranlib
-STRIP=arm-hisiv300-linux-strip
+CC=arm-openwrt-linux-gcc
+AR=arm-openwrt-linux-ar
+RANLIB=arm-openwrt-linux-ranlib
+STRIP=arm-openwrt-linux-strip
